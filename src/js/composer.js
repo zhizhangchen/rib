@@ -362,6 +362,8 @@ $(function() {
                 over: function(event, ui){
                     trackOffsets('over:    ',ui,$(this).data('sortable'));
 
+                    if ($(this).hasClass('nrc-sortable-container ui-collapsible'))
+                        $(this).trigger('expand');
                     if (ui && ui.placeholder) {
                         var s = ui.placeholder.siblings('.adm-node:visible,' +
                                                       '.orig-adm-node:visible'),
@@ -386,8 +388,10 @@ $(function() {
                     }
                 },
                 out: function(event, ui){
-                    $(this).removeClass('ui-state-active');
                     trackOffsets('out:     ',ui,$(this).data('sortable'));
+                    if ($(this).hasClass('nrc-sortable-container ui-collapsible')
+                            && $(this).subtree('.ui-selected').length === 0)
+                        $(this).trigger('collapse');
                 },
                 stop: function(event, ui){
                     trackOffsets('stop:    ',ui,$(this).data('sortable'));
