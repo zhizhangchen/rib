@@ -61,6 +61,10 @@
  *   4) deny: string or array of string names of disallowed widgets
  *             (all others will be allowed)
  *   Only one of allow or deny should be set, if neither than all are allowed.
+ *   5) locator:  a selector used to find the html tag to append child node
+ *                 of this zone.
+ *   6) itemWrapper: an HTML tag used to wrapp a child node before appending
+ *                   to the zone
  *
  * The "properties" of each widget definition is an object, each property of
  * which names a property of the widget. These are objects with the following
@@ -323,7 +327,7 @@ var BWidgetRegistry = {
             {
                 name: "bottom",
                 cardinality: "1",
-                allow: "Navbar, OptionHeader"
+                allow: ["Navbar", "OptionHeader"]
             }
         ],
     },
@@ -406,6 +410,22 @@ var BWidgetRegistry = {
         ],
     },
 
+    Navbar: {
+        parent: "Base",
+        template: '<div data-role="navbar"><ul/></div>',
+        paletteImageName: "jqm_navbar.svg",
+        dragHeader: true,
+        zones: [
+            {
+                name: "default",
+                locator: 'ul',
+                cardinality: "N",
+                allow: "Button"
+
+            }
+        ],
+    },
+
     /**
      * Represents a Control Group object. Includes an "data-type" property
      * that should be "vertical" or "horizontal"
@@ -457,6 +477,7 @@ var BWidgetRegistry = {
             target: {
                 type: "string",
                 defaultValue: "",
+                htmlSelector: "a",
                 htmlAttribute: "href"
             },
             icon: {
@@ -466,33 +487,42 @@ var BWidgetRegistry = {
                            "gear", "grid", "home", "info", "minus", "plus",
                            "refresh", "search", "star" ],
                 defaultValue: "none",
+                htmlSelector: "a",
                 htmlAttribute: "data-icon"
             },
             iconpos: {
                 type: "string",
                 options: [ "left", "top", "bottom", "right", "notext" ],
                 defaultValue: "left",
+                htmlSelector: "a",
                 htmlAttribute: "data-iconpos"
             },
             theme: {
                 type: "string",
                 options: [ "default", "a", "b", "c", "d", "e" ],
                 defaultValue: "default",
+                htmlSelector: "a",
                 htmlAttribute: "data-theme"
             },
             inline: {
                 type: "boolean",
                 defaultValue: "false",
+                htmlSelector: "a",
                 htmlAttribute: "data-inline"
             },
             transition: {
                 type: "string",
                 options: [ "slide", "slideup", "slidedown", "pop", "fade", "flip" ],
                 defaultValue: "slide",
+                htmlSelector: "a",
                 htmlAttribute: "data-transition"
             }
         },
-        template: '<a data-role="button">%TEXT%</a>'
+        template: {
+            default: '<a data-role="button">%TEXT%</a>',
+            Navbar: '<li><a data-role="button">%TEXT%</a></li>',
+        }
+
     },
 
     /**
@@ -2206,6 +2236,8 @@ var BWidget = {
         }
         if (typeof template === "function")
             template = new XMLSerializer().serializeToString(template(node)[0]);
+        else if (typeof template === "object")
+            template = (template[node.getParent().getType()] || template.default);
         return template;
     },
 
@@ -2300,6 +2332,35 @@ var BWidget = {
             }
         }
         throw new Error("no such zone found in getZoneCardinality: " +
+                        zoneName);
+    },
+
+    /**
+     * Get the zone information for the given zone in the given widget type.
+     *
+     * @param {String} widgetType The type of the widget.
+     * @param {String} zoneName The name of the zone.
+     * @return {Ojbect} Returns the whole object of this zone.
+     * @throws {Error} If widgetType is invalid or the zone is not found.
+     */
+    getZone: function (widgetType, zoneName) {
+        var widget, zones, length, i;
+        widget = BWidgetRegistry[widgetType];
+        if (typeof widget !== "object") {
+            throw new Error("undefined widget type in getZone: " +
+                            widgetType);
+        }
+
+        zones = widget.zones;
+        if (zones && zones.length) {
+            length = zones.length;
+            for (i = 0; i < length; i++) {
+                if (zones[i].name === zoneName) {
+                    return zones[i];
+                }
+            }
+        }
+        throw new Error("no such zone found in getZone: " +
                         zoneName);
     },
 
