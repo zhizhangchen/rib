@@ -98,6 +98,15 @@
             widget.refresh(event,widget);
         },
 
+        _addButton: function (text, container, clickHandler) {
+            return $('<button/>').addClass('buttonStyle').text(text)
+                .one('click', clickHandler)
+                .appendTo(
+                    $('<div/>').addClass('property_footer')
+                        .appendTo(container)
+                )
+        },
+
         _showProperties: function(event) {
             var node = event.node,
                 labelId, labelVal, valueId, valueVal, count,
@@ -335,15 +344,7 @@
             }
 
             // add delete element button
-            $('<div><button> Delete Element </button></div>')
-                .addClass('property_footer')
-                .children('button')
-                .addClass('buttonStyle')
-                .attr('id', "deleteElement")
-                .end()
-                .appendTo(content);
-            content.find('#deleteElement')
-                .one('click', function (e) {
+            widget._addButton("Delete Element", content, function (e) {
                     var parent, zone, index;
                     try {
                         index = node.getZoneIndex();
@@ -376,6 +377,8 @@
                     return false;
                 });
 
+            widget._addButton("Add Event Handlers", content, function() {
+            });
             function validValue(element, type) {
                 var ret = null, value = element.val();
                 switch (type) {
