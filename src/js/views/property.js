@@ -98,9 +98,8 @@
             widget.refresh(event,widget);
         },
 
-        _addButton: function (text, container, clickHandler) {
+        _addButton: function (text, container) {
             return $('<button/>').addClass('buttonStyle').text(text)
-                .one('click', clickHandler)
                 .appendTo(
                     $('<div/>').addClass('property_footer')
                         .appendTo(container)
@@ -344,7 +343,8 @@
             }
 
             // add delete element button
-            widget._addButton("Delete Element", content, function (e) {
+            widget._addButton("Delete Element", content).one('click', 
+                function (e) {
                     var parent, zone, index;
                     try {
                         index = node.getZoneIndex();
@@ -377,7 +377,29 @@
                     return false;
                 });
 
-            widget._addButton("Add Event Handlers", content, function() {
+            var box = function (type, child) {
+                return $('<div class="'+type+'box"/>').append(child);
+            };
+            var label = function (text) {
+                return $('<label/>').text(text);
+            }
+            $.fn.appendVbox = function (child) {
+                return $(this).append(box('v', child));
+            };
+            widget._addButton("Add Event Handlers", content).click(function() {
+                $('<form/>').append(
+                        box('h').appendVbox(label('Event'))
+                            .appendVbox(label('JavaScript Code'))
+                    )
+                    .dialog({
+                        title: "Event Handlers(" + BWidget.getDisplayLabel(type)
+                            + (node.getProperty('id') ? 
+                                "#" + node.getProperty('id'):'') + ")", 
+                        modal:true,
+                        width: 769,
+                        height: 585,
+                        resizable:false
+                     });
             });
             function validValue(element, type) {
                 var ret = null, value = element.val();
