@@ -377,19 +377,30 @@
                     return false;
                 });
 
-            var box = function (type, child) {
-                return $('<div class="'+type+'box"/>').append(child);
+            var box = function (type, children) {
+                var newBox =  $('<div class="'+type+'box"/>');
+                for (var i = 0; children && i < children.length; i ++) {
+                    newBox.append(children[i]);
+                }
+                return newBox;
             };
             var label = function (text) {
                 return $('<label/>').text(text);
             }
-            $.fn.appendVbox = function (child) {
-                return $(this).append(box('v', child));
+            $.fn.appendVbox = function (children) {
+                return $(this).append(box('v', children));
             };
             widget._addButton("Add Event Handlers", content).click(function() {
                 $('<form/>').append(
-                        box('h').appendVbox(label('Event'))
-                            .appendVbox(label('JavaScript Code'))
+                        box('h').appendVbox([
+                                label('Event'),
+                                $('<select/>'),
+                                $('<a href="javascript:void(0)">Delete</a>'),
+                                $('<a/>').addClass("addEventHandler separated")
+                                    .click( function () {
+                                    })
+                            ])
+                            .appendVbox([label('JavaScript Code')])
                     )
                     .dialog({
                         title: "Event Handlers(" + BWidget.getDisplayLabel(type)
