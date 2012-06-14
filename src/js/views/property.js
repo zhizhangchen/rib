@@ -98,6 +98,14 @@
             widget.refresh(event,widget);
         },
 
+        _addButton: function (text, container) {
+            return $('<button/>').addClass('buttonStyle').text(text)
+                .appendTo(
+                    $('<div/>').addClass('property_footer')
+                        .appendTo(container)
+                )
+        },
+
         _showProperties: function(event) {
             var node = event.node,
                 labelId, labelVal, valueId, valueVal, count,
@@ -335,15 +343,8 @@
             }
 
             // add delete element button
-            $('<div><button> Delete Element </button></div>')
-                .addClass('property_footer')
-                .children('button')
-                .addClass('buttonStyle')
-                .attr('id', "deleteElement")
-                .end()
-                .appendTo(content);
-            content.find('#deleteElement')
-                .one('click', function (e) {
+            widget._addButton("Delete Element", content).one('click', 
+                function (e) {
                     var parent, zone, index;
                     try {
                         index = node.getZoneIndex();
@@ -376,6 +377,41 @@
                     return false;
                 });
 
+            var box = function (type, children) {
+                var newBox =  $('<div class="'+type+'box"/>');
+                for (var i = 0; children && i < children.length; i ++) {
+                    newBox.append(children[i]);
+                }
+                return newBox;
+            };
+            var label = function (text) {
+                return $('<label/>').text(text);
+            }
+            $.fn.appendVbox = function (children) {
+                return $(this).append(box('v', children));
+            };
+            widget._addButton("Add Event Handlers", content).click(function() {
+                $('<form/>').append(
+                        box('h').appendVbox([
+                                label('Event'),
+                                $('<select/>'),
+                                $('<a href="javascript:void(0)">Delete</a>'),
+                                $('<a/>').addClass("addEventHandler separated")
+                                    .click( function () {
+                                    })
+                            ])
+                            .appendVbox([label('JavaScript Code')])
+                    )
+                    .dialog({
+                        title: "Event Handlers(" + BWidget.getDisplayLabel(type)
+                            + (node.getProperty('id') ? 
+                                "#" + node.getProperty('id'):'') + ")", 
+                        modal:true,
+                        width: 769,
+                        height: 585,
+                        resizable:false
+                     });
+            });
             function validValue(element, type) {
                 var ret = null, value = element.val();
                 switch (type) {

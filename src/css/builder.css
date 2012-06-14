@@ -1404,3 +1404,12 @@ input.screenCoordinate::-webkit-inner-spin-button {
     top: -1em;
     left: -1em;
 }
+
+.addEventHandler {
+    cursor: pointer;
+    padding: 20px;
+    background: url("images/deleteButton_up.png") no-repeat center;
+}
+.addEventHandler:active {
+    background-image: url("images/deleteButton_down.png");
+}
