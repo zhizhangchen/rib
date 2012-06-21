@@ -137,6 +137,10 @@
             options = node.getPropertyOptions();
             // iterate property of node
             for (p in props) {
+                if (!node.getPropertyVisibleInPropertyView(p)) {
+                    continue;
+                }
+
                 labelVal = p.replace(/_/g,'-');
                 valueId = p+'-value';
                 valueVal = props[p];
@@ -390,28 +394,119 @@
             $.fn.appendVbox = function (children) {
                 return $(this).append(box('v', children));
             };
-            widget._addButton("Add Event Handlers", content).click(function() {
-                $('<form/>').append(
-                        box('h').appendVbox([
+
+            /*** Event handler ***/
+            var openEventHandlerWindow = function (event) {
+                var oldEventElement, eventSelectElement, eventOptionElements,
+                    eventEditorContainer, eventEditor, formElement;
+
+                // Construct event options elements
+                oldEventElement = $(
+                    '<input name="oldEventType" type="hidden" value="" />'
+                );
+
+                eventSelectElement = $('<select name="eventType"></select>')
+                    .append($('<option>------</option>'))
+                    .change(function(e) {
+                        formElement.trigger('submit');
+                    });
+                eventOptionElements = (function() {
+                    // TODO: Get event options from widgets.js.
+                    //       Use a fake data to instead temporary.
+                    return [
+                        $('<option value="click">Click</option>'),
+                        $('<option value="mouseup">Mouse up</option>'),
+                        $('<option value="mousedown">Mouse down</option>'),
+                    ]
+                })();
+                for (var i=0; i<eventOptionElements.length; i++) {
+                    eventSelectElement.append(eventOptionElements[i])
+                };
+
+                // Construct code editor element
+                eventEditorContainer = $('<div/>')
+                    .attr('id', 'eventEditorContainer')
+                    .css({
+                        'overflow': 'auto',
+                        'resize':  'none',
+                        'height': '500px',
+                        'width': '550px',
+                        'border': '1px solid #CCC',
+                        'margin': 0,
+                        'padding': 0
+                    });
+                eventEditor = CodeMirror(
+                    eventEditorContainer[0],
+                    {
+                        mode: "javascript",
+                    }
+                );
+                eventEditorContainer.show();
+
+                // Construct the form element
+                formElement = $('<form/>')
+                    .append(
+                        box('h')
+                            .appendVbox([
                                 label('Event'),
-                                $('<select/>'),
-                                $('<a href="javascript:void(0)">Delete</a>'),
-                                $('<a/>').addClass("addEventHandler separated")
-                                    .click( function () {
+                                eventSelectElement,
+                                oldEventElement,
+                                $('<a/>')
+                                    .addClass("addEventHandler separated")
+                                    .click( function (e) {
+                                        e.preventDefault();
+                                        var askClean = confirm('Are you sure to clean the javascript codes?');
+                                        if(askClean) {
+                                            eventEditor.setValue('');
+                                        }
                                     })
                             ])
-                            .appendVbox([label('JavaScript Code')])
+                            .appendVbox([
+                                label('JavaScript Code'),
+                                eventEditorContainer
+                            ])
                     )
                     .dialog({
-                        title: "Event Handlers(" + BWidget.getDisplayLabel(type)
+                        title: "Event Handlers("
+                            + BWidget.getDisplayLabel(type)
                             + (node.getProperty('id') ? 
                                 "#" + node.getProperty('id'):'') + ")", 
-                        modal:true,
+                        modal: true,
                         width: 769,
                         height: 585,
-                        resizable:false
-                     });
-            });
+                        resizable: false
+                     })
+                    .bind('dialogclose', function(e) {
+                        $(this).trigger('submit');
+                    })
+                    .bind('submit', function(e) {
+                        e.preventDefault();
+                        // Serialize the form data to JSON.
+                        var formData = $(this).serializeJSON();
+                        formData['jsCode'] = eventEditor.getValue();
+                        console.log(formData);
+                        
+                        // TODO: Save editor content to ADM property.
+                        
+                        // Checking the event select element changed or not.
+                        //
+                        // If old event is not equal to current event in
+                        // select, it's meaning the select changed not
+                        // the window close, so we need to change the
+                        // editor content.
+                        if (formData.oldEventType != formData.eventType) {
+                            // TODO: Load the event property content
+                            //       and the editor content
+                            console.log(formData.oldEventType);
+                            console.log(formData.eventType);
+                            oldEventElement.val(formData.eventType);
+                        };
+                    });
+            };
+            widget._addButton("Add Event Handlers", content)
+                .click(openEventHandlerWindow);
+            /*** End of Event handler ***/
+
             function validValue(element, type) {
                 var ret = null, value = element.val();
                 switch (type) {
