@@ -466,6 +466,7 @@ var BWidgetRegistry = {
             propertyName: "text"
         },
         properties: {
+            /*** HTML attributes ***/
             text: {
                 type: "string",
                 defaultValue: "Button"
@@ -506,6 +507,18 @@ var BWidgetRegistry = {
                 options: [ "slide", "slideup", "slidedown", "pop", "fade", "flip" ],
                 defaultValue: "slide",
                 htmlAttribute: "data-transition"
+            },
+
+            /*** Events ***/
+            click: {
+                type: "event",
+                displayName: "On click",
+                visibleInPropertyView: false,
+            },
+            mouseup: {
+                type: "event",
+                displayName: "On mouse up",
+                visibleInPropertyView: false,
             }
         },
         template: '<a data-role="button">%TEXT%</a>'
