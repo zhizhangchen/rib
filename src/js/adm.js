@@ -1906,6 +1906,17 @@ ADMNode.prototype.getPropertyType = function (property) {
 };
 
 /**
+ * Gets the property visible for the named property for this widget type.
+ *
+ * @param {String}  property The name of the requested property.
+ * @return {Boolean} The VisibleInPropertyView attribue of the property, 
+ *                   or the true  if the property has no the attribute.
+ */
+ADMNode.prototype.getPropertyVisibleInPropertyView = function (property) {
+    return BWidget.getPropertyVisibleInPropertyView(this.getType(), property);
+};
+
+/**
  * Returns whether the property is explicitly set or not. Properties that are
  * explicitly set should be serialized to disk.
  *

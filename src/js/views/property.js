@@ -137,6 +137,10 @@
             options = node.getPropertyOptions();
             // iterate property of node
             for (p in props) {
+                if (!node.getPropertyVisibleInPropertyView(p)) {
+                    continue;
+                }
+
                 labelVal = p.replace(/_/g,'-');
                 valueId = p+'-value';
                 valueVal = props[p];

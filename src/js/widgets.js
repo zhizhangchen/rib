@@ -2161,6 +2161,26 @@ var BWidget = {
     },
 
     /**
+     * Gets the visible in property view for a given instance property.
+     *
+     * @param {String} widgetType The type of the widget.
+     * @param {String} property The name of the requested property.
+     * @return {Boolean} The visible in property view for the given property,
+     *                   or true if this property has
+     *                   no the attribute.
+     */
+    getPropertyVisibleInPropertyView: function (widgetType, property) {
+        var schema = BWidget.getPropertySchema(widgetType, property);
+        console.log(schema.visibleInPropertyView);
+
+        if (schema && typeof(schema.visibleInPropertyView) == 'boolean') {
+            return schema.visibleInPropertyView;
+        } else {
+            return true;
+        }
+    },
+
+    /**
      * Determines if the given instance property exists for the given widget
      * type.
      *
