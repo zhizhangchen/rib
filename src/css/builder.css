@@ -1335,13 +1335,15 @@ div.propertyItems label[for|=id] {
     size: 4;
 }
 
-.deviceSetting #buttonSet{
-    position: absolute;
+center.title {
+    margin: 1em 1em 1.5em 1em;
+}
+#buttonSet{
     bottom: 0px;
     width: 100%;
 }
-.deviceSetting #buttonSet * {
-    margin: 0 1em 3em 1em;
+#buttonSet * {
+    margin: 1.5em 1em 1.5em 1em;
     min-width: 25%;
 }
 
