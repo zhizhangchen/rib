@@ -94,7 +94,7 @@
         _modelUpdatedHandler: function(event, widget) {
             widget = widget || this;
             if (event.node &&
-                BWidget.isShowInOutline(event.node.getType())) {
+                BWidget.showInOutline(event.node.getType())) {
                 switch (event.type) {
                     case "nodeAdded":
                         widget.addNode(event.node);
@@ -139,7 +139,7 @@
             }
 
             type = admNode.getType();
-            showInOutline = BWidget.isShowInOutline(type);
+            showInOutline = BWidget.showInOutline(type);
             label = BWidget.getDisplayLabel(type);
             if (showInOutline) {
                 treeNode[label] = childNodes;

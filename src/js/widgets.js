@@ -2181,7 +2181,7 @@ var BWidget = {
      * @return {Boolean} true if this widget is to be shown in the property view,
      *                   false if not or it is undefined.
      */
-    isShownInProperty: function (widgetType) {
+    showInProperty: function (widgetType) {
         var widget = BWidgetRegistry[widgetType];
         if (typeof widget === "object" && widget.showInProperty !== false) {
             return true;
@@ -2196,7 +2196,7 @@ var BWidget = {
      * @return {Boolean} true if this widget is to be shown in the outline view,
      *                   false if not or it is undefined.
      */
-    isShowInOutline: function (widgetType) {
+    showInOutline: function (widgetType) {
         var widget = BWidgetRegistry[widgetType];
         if (typeof widget === "object" && widget.showInOutline !== false) {
             return true;
