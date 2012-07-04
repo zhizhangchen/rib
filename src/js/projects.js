@@ -676,11 +676,37 @@ $(function () {
         var reader = new FileReader();
 
         reader.onloadend = function(e) {
-            var properties, design, designData,
+            var properties, design, designData, designRule,
+                copyRule, copyFiles, data, zip, successHandler,
                 resultProject, extraHandler, newPid, projectDir;
-            // new pid for imported project
+            // Get result data from reader
+            data = e.target.result;
+            // New pid for imported project
             newPid = pmUtils.getValidPid();
             projectDir = pmUtils.ProjectDir + "/" + newPid + "/";
+            designRule = /\.(json|rib)$/i;
+            copyRule = /^images\//i;
+            copyFiles = [];
+            try {
+                zip = new ZipFile(data);
+            } catch (e) {
+                console.warn("Failed to parse imported file as zip.");
+            }
+            if (zip && zip.filelist) {
+                zip.filelist.forEach(function(zipInfo, idx, array){
+                    if (designRule.test(zipInfo.filename)) {
+                        designData = zip.extract(zipInfo.filename);
+                    }
+                    if (copyRule.test(zipInfo.filename)) {
+                        copyFiles.push(zipInfo.filename);
+                    }
+                });
+            } else {
+                // Try to parse imported data as json
+                console.warn("Try to parse imported file as JSON.");
+                designData = data;
+            }
+
             // This is the extra Handler when build ADM tree
             extraHandler = function (node, obj) {
                 var props, p, value, pType;
@@ -695,7 +721,6 @@ $(function () {
                     }
                 }
             };
-            designData = $.rib.zipToProj(e.target.result);
             resultProject = $.rib.JSONToProj(designData, extraHandler);
             if (!resultProject) {
                 alert("Invalid imported project.");
@@ -704,9 +729,40 @@ $(function () {
             // Get properties from imported file
             properties = resultProject.pInfo || {"name":"Imported Project"};
             design = resultProject.design;
+            successHandler = function () {
+                var copyHandler, count;
+                if (copyFiles.length <= 0) {
+                    success && success();
+                    return;
+                }
+                count = 0;
+                copyHandler = function (dirEntry) {
+                    if (!dirEntry.isDirectory) {
+                        console.error(dirEntry.fullPath + " is not a directory to save files in sandbox.");
+                        return;
+                    }
+                    // Copy needed files to sandbox
+                    $.each(copyFiles, function(i, fileName) {
+                        $.rib.fsUtils.write(projectDir + fileName, zip.extract(fileName), function (newFile) {
+                            count++;
+                            if (count === copyFiles.length) {
+                                success && success();
+                            }
+                        }, function(e) {
+                            count++;
+                            console.error("Error when copy " + projectDir + fileName + " to sandbox.");
+                            $.rib.fsUtils.onError(e);
+                        }, false, true);
+                    });
+                }
+                // Create "images/" sub-directory and copy the images in
+                $.rib.fsUtils.mkdir(projectDir + "images", copyHandler, function(e) {
+                    console.error("Failed to create sub-folder images/ in " + projectDir);
+                });
+            };
 
             if (design && (design instanceof ADMNode)) {
-                $.rib.pmUtils.createProject(properties, success, error, {"pid": newPid, "design": design});
+                $.rib.pmUtils.createProject(properties, successHandler, error, {"pid": newPid, "design": design});
             } else {
                 console.error("Imported project failed");
                 error && error();
