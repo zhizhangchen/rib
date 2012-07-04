@@ -648,7 +648,8 @@ $(function() {
             'src/css/images/icons-36-black.png',
             'src/css/images/icon-search-black.png',
             'src/css/images/web-ui-fw_noContent.png',
-            'src/css/images/web-ui-fw_volume_icon.png'
+            'src/css/images/web-ui-fw_volume_icon.png',
+            'src/css/images/widgets/tizen_image.svg'
         ];
         design = design || ADM.getDesignRoot();
 
@@ -675,6 +676,8 @@ $(function() {
         var zip, projName, resultHTML, resultConfig, files, i, iconPath;
         zip = new JSZip();
         files = getNeededFiles(design);
+        // Add inner files in sandbox
+        $.merge(files, innerFiles);
         // Get the project Name
         projName = $.rib.pmUtils.getProperty(pid, "name") || "Untitled";
         // If the type is "wgt" then add config.xml and icon
@@ -693,15 +696,27 @@ $(function() {
 
         i = 0;
         files.forEach(function (file, index) {
+            var req, srcPath, dstPath;
             // We have to do ajax request not using jquery as we can't get "arraybuffer" response from jquery
             var req = window.ActiveXObject ? new window.ActiveXObject( "Microsoft.XMLHTTP" ): new XMLHttpRequest();
+            req = window.ActiveXObject ? new window.ActiveXObject( "Microsoft.XMLHTTP" ): new XMLHttpRequest();
+            if ((typeof file === "object") && file.dst && file.src) {
+                srcPath = file.src;
+                dstPath = file.dst;
+            } else if(typeof file === "string") {
+                srcPath = file;
+                dstPath = file;
+            } else {
+                console.error("Envalid path for exported Zip.");
+                return;
+            }
             req.onload = function() {
                 var uIntArray = new Uint8Array(this.response);
                 var charArray = new Array(uIntArray.length);
                 for (var j = 0; j < uIntArray.length; j ++) {
                     charArray[j] = String.fromCharCode(uIntArray[j]);
                 }
-                zip.add(file, btoa(charArray.join('')), {base64:true});
+                zip.add(dstPath, btoa(charArray.join('')), {base64:true});
                 if (i === files.length - 1){
                     var content = zip.generate(true);
                     exportFile(projName, content, true);
@@ -709,7 +724,7 @@ $(function() {
                 i++;
             }
             try {
-                req.open("GET", file, true);
+                req.open("GET", srcPath, true);
                 req.responseType = 'arraybuffer';
             } catch (e) {
                 alert(e);
