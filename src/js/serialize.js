@@ -638,8 +638,9 @@ $(function() {
         return (xmlHeader + xmlserializer.serializeToString(xmlDoc));
     }
 
-    function getNeededFiles () {
-        var files = [
+    function getNeededFiles (design) {
+        var files, design;
+        files = [
             'src/css/images/ajax-loader.png',
             'src/css/images/icons-18-white.png',
             'src/css/images/icons-36-white.png',
@@ -649,10 +650,11 @@ $(function() {
             'src/css/images/web-ui-fw_noContent.png',
             'src/css/images/web-ui-fw_volume_icon.png'
         ];
+        design = design || ADM.getDesignRoot();
 
         function getDefaultHeaderFiles (type) {
             var headers, files = [];
-            headers = ADM.getDesignRoot().getProperty(type);
+            headers = design.getProperty(type);
             for ( var header in headers) {
                 // Skip design only header properties
                 if (headers[header].hasOwnProperty('designOnly') && headers[header].designOnly) {
@@ -669,10 +671,10 @@ $(function() {
         return files;
     }
 
-    function  createZipAndExport(pid, ribFile, type) {
+    function  createZipAndExport(pid, design, ribFile, innerFiles, type) {
         var zip, projName, resultHTML, resultConfig, files, i, iconPath;
         zip = new JSZip();
-        files = getNeededFiles();
+        files = getNeededFiles(design);
         // Get the project Name
         projName = $.rib.pmUtils.getProperty(pid, "name") || "Untitled";
         // If the type is "wgt" then add config.xml and icon
@@ -684,7 +686,7 @@ $(function() {
             files.push(iconPath);
         }
         ribFile && zip.add(projName + ".json", ribFile);
-        resultHTML = generateHTML();
+        resultHTML = generateHTML(design);
         resultHTML && zip.add("index.html", resultHTML.html);
         // projName now is the whole package name
         projName = projName + '.' + type;
@@ -716,9 +718,9 @@ $(function() {
         });
     }
 
-    function exportPackage (ribFile) {
+    function exportPackage (design, ribFile, innerFiles) {
         var exportDialog, pid;
-        pid = pid || $.rib.pmUtils.getActive();
+        pid = $.rib.pmUtils.getActive();
 
         exportDialog = createExportDialog();
         exportDialog.find("button#export-json").click(function () {
@@ -729,11 +731,11 @@ $(function() {
             exportDialog.dialog('close');
         });
         exportDialog.find("button#export-wgt").click(function () {
-            createZipAndExport(pid, ribFile, 'wgt');
+            createZipAndExport(pid, design, ribFile, innerFiles, 'wgt');
             exportDialog.dialog('close');
         });
         exportDialog.find("button#export-zip").click(function () {
-            createZipAndExport(pid, ribFile, 'zip');
+            createZipAndExport(pid, design, ribFile, innerFiles, 'zip');
             exportDialog.dialog('close');
         });
         return;

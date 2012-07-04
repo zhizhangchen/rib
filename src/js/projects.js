@@ -608,7 +608,8 @@ $(function () {
      * @return {Bool} True if success, false when fails.
      */
     pmUtils.exportProject = function () {
-        var pid, pInfo, design, obj, resultProject, extraHandler;
+        var pid, pInfo, design, obj, resultProject, extraHandler,
+            innerFiles = [];
         pid = pmUtils.getActive();
         pInfo = pmUtils._projectsInfo[pid];
         if (!pInfo) {
@@ -628,6 +629,9 @@ $(function () {
                 if ((pType === "url-uploadable") && (value.indexOf(rootUrl) === 0)) {
                     // Put all sandbox images as "images/fileName"
                     newPath = "images" + value.substr(value.lastIndexOf('/'));
+                    // Add the image file to the needed list
+                    innerFiles.push({"src":value,
+                               "dst":newPath});
                     value = value.replace(projectDir, "{projectFolder}");
                     // Change the related object
                     object.properties[p] = value;
@@ -642,7 +646,7 @@ $(function () {
             obj.pInfo = pInfo;
             resultProject = JSON.stringify(obj);
             try {
-                $.rib.exportPackage(resultProject);
+                $.rib.exportPackage(design, resultProject, innerFiles);
             } catch (e) {
                 console.error("Export to package failed");
                 return false;
