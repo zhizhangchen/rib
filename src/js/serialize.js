@@ -626,8 +626,6 @@ $(function() {
             'src/css/images/icons-18-black.png',
             'src/css/images/icons-36-black.png',
             'src/css/images/icon-search-black.png',
-            'src/css/images/web-ui-fw_noContent.png',
-            'src/css/images/web-ui-fw_volume_icon.png',
             'src/css/images/widgets/tizen_image.svg'
         ];
         design = design || ADM.getDesignRoot();
