@@ -1339,13 +1339,10 @@ var BWidgetRegistry = {
                 htmlAttribute: "data-filter"
             },
             theme: BCommonProperties.theme,
-            filter_theme: {
+            filter_theme: $.extend({}, BCommonProperties.theme, {
                 displayName: "filter theme",
-                type: "string",
-                options: [ "default", "a", "b", "c", "d", "e" ],
-                defaultValue: "default",
                 htmlAttribute: "data-filter-theme"
-            },
+            }),
             filter_placeholder: {
                 displayName: "filter placeholder",
                 type: "string",
@@ -1731,7 +1728,7 @@ var BWidgetRegistry = {
             }),
             collapsed: {
                 type: "boolean",
-                defaultValue: "true",
+                defaultValue: true,
                 htmlAttribute: "data-collapsed",
             },
             iconpos: BCommonProperties.iconpos,
