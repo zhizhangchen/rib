@@ -641,7 +641,7 @@ var BWidgetRegistry = {
             }),
             iconshadow: {
                 type: "boolean",
-                defaultValue: "true",
+                defaultValue: true,
                 htmlAttribute: "data-iconshadow",
                 displayName: "Icon Shadow"
             },
@@ -652,8 +652,8 @@ var BWidgetRegistry = {
                 htmlAttribute: {
                     name: "class",
                     value: {
-                        "true": "ui-btn-active",
-                        "false": ""
+                        true: "ui-btn-active",
+                        false: ""
                     }
                 }
             },
@@ -674,8 +674,8 @@ var BWidgetRegistry = {
                 htmlAttribute: {
                     name: "data-rel",
                     value: {
-                        "true": "back",
-                        "false": ""
+                        true: "back",
+                        false: ""
                     }
                 }
             },
@@ -838,7 +838,7 @@ var BWidgetRegistry = {
             }),
             highlight: {
                 type: "boolean",
-                defaultValue: "false",
+                defaultValue: false,
                 htmlAttribute: "data-highlight",
                 htmlSelector: "input",
             },
@@ -985,13 +985,10 @@ var BWidgetRegistry = {
             },
             mini: BCommonProperties.mini,
             theme: BCommonProperties.theme,
-            tracktheme: {
-                type: "string",
-                options: [ "default", "a", "b", "c", "d", "e" ],
-                defaultValue: "default",
+            track_theme: $.extend({}, BCommonProperties.theme, {
+                displayName: "track theme",
                 htmlAttribute: "data-track-theme",
-                displayName: "Track Theme", 
-            },
+            }),
             disabled: BCommonProperties.disabled,
             nativecontrol: BCommonProperties.nativecontrol,
         },
