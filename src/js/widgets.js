@@ -63,8 +63,8 @@ var BCommonProperties = {
         htmlAttribute: {
             name: "data-role",
             value: {
-                true: "none",
-                false: ""
+                "true": "none",
+                "false": ""
             }
         }
     },
