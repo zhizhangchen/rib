@@ -1024,6 +1024,7 @@ var BWidgetRegistry = {
                 optionItem.value = "Value";
                 prop.children.push(optionItem);
             }
+            node.setProperty("options", prop);
         },
         displayLabel: "Select Menu",
         properties: {
