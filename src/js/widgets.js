@@ -311,7 +311,18 @@ var BWidgetRegistry = {
         showInPalette: false,
         selectable: true,
         moveable: false,
-        template: '<div data-role="page"></div>',
+        template: function (node) {
+            var prop, code, design = node.getDesign();
+            //make sure style of the first page  can only be page
+            if (design.getChildren()[0] === node) {
+                code =  $('<div data-role="page"></div>');
+            } else {
+                code = $('<div data-role="' +
+                        (node.getProperty("dialog")? "dialog" : "page") + '"></div>');
+            }
+
+            return code;
+        },
         properties: {
             id: {
                 type: "string",
@@ -323,6 +334,10 @@ var BWidgetRegistry = {
                 type: "string",
                 defaultValue: "",
                 htmlAttribute: "data-title",
+            },
+            dialog: {
+                type: "boolean",
+                defaultValue: false,
             }
         },
         redirect: {
@@ -350,7 +365,7 @@ var BWidgetRegistry = {
 
     /**
      * Represents a header object at the top of a page. Includes a "text"
-     * property that represents header text. Includes "left" and "right" zones
+ * property that represents header text. Includes "left" and "right" zones
      * for optional buttons, and "bottom" zone for an optional navbar.
      */
     Header: {
@@ -622,8 +637,8 @@ var BWidgetRegistry = {
             opentargetas : {
                 type: "string",
                 displayName: "open target as",
-                options: ["page", "dialog"],
-                defaultValue: "page",
+                options: ["default", "page", "dialog"],
+                defaultValue: "default",
                 htmlAttribute: "data-rel"
             },
             icon: BCommonProperties.icon,
