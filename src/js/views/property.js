@@ -108,7 +108,7 @@
                 p, props, options, code, o, propertyItems, label, value,
                 title = this.element.parent().find('.property_title'),
                 content = this.element.find('.property_content'),
-                continueToDelete;
+                continueToDelete, buttonsContainer;
 
             // Clear the properties pane when nothing is selected
             if (node === null || node === undefined) {
@@ -479,15 +479,17 @@
                     });
             }
 
-            // add delete element button
-            $('<div><button> Delete Element </button></div>')
+            // add buttons container
+            buttonsContainer = $('<div>')
                 .addClass('property_footer')
-                .children('button')
+                .appendTo(content)
+                .end();
+
+            // add delete element button
+            $('<button>Delete Element</button>')
                 .addClass('buttonStyle')
                 .attr('id', "deleteElement")
-                .end()
-                .appendTo(content);
-            content.find('#deleteElement')
+                .appendTo(buttonsContainer)
                 .bind('click', function (e) {
                     var parent, zone, index, msg;
                     var doDelete = function () {
@@ -529,6 +531,230 @@
                     }
                     e.stopPropagation();
                     return false;
+                });
+
+            // Add event handler button
+            $('<button>Add Event Handlers</button>')
+                .addClass('buttonStyle')
+                .attr('id', "eventHandlerElement")
+                .appendTo(buttonsContainer)
+                .bind('click', function(e) {
+                    var formContainer, leftPannel, leftPannelContainer,
+                        rightPannel, eventElement, eventSelectElement,
+                        emptyEditorContentFunc, eventEditorContainer,
+                        eventEditor, formElement, jsCode;
+
+                    // Construct the page layout
+                    formContainer = $('<div class="hbox" />');
+                    leftPannel = $('<div class="flex1 vbox wrap_left" />')
+                        .appendTo(formContainer)
+                    rightPannel =$('<div class="flex1 wrap_right" />')
+                        .appendTo(formContainer)
+
+                    /*** Left pannel contents ***/
+
+                    $('<div class="title"><label>Event</label></div>')
+                        .appendTo(leftPannel);
+
+                    leftPannelContainer = $('<div>')
+                        .addClass('container')
+                        .appendTo(leftPannel);
+
+                    // Construct event options elements
+                    eventSelectElement = $('<select>')
+                        .attr({'name': 'selectedEvent'})
+                        .addClass('center')
+                        .append($('<option value="">------</option>'))
+                        .change(function(e) {
+                            formElement.trigger('submit');
+                        })
+                        .select()
+                        .appendTo(leftPannelContainer);
+
+                    // Generate the event properties list.
+                    for (p in props) {
+                        if (BWidget.getPropertyType(node.getType(), p) != 'event')
+                            continue;
+
+                        $('<option>')
+                            .attr('value', p)
+                            .html(node.getPropertyDisplayName(p))
+                            .appendTo(eventSelectElement);
+                    }
+
+                    // Add a hidden input to store current event name
+                    eventElement = $(
+                        '<input name="currentEvent" type="hidden" value="" />'
+                    ).appendTo(leftPannelContainer);
+
+                    // Intial the the trash button
+                    emptyEditorContentFunc = function (e) {
+                        e.preventDefault();
+                        var askClean = $.rib.confirm(
+                            'Are you sure to clean the javascript codes?',
+                            function() {
+	                            eventEditor.setValue('');
+	                        }
+                        );
+                    };
+
+                    $('<a href="javascript:void(0)">Delete</a>')
+                        .addClass('emptyLink')
+                        .click(emptyEditorContentFunc)
+                        .appendTo(leftPannelContainer);
+
+                    $('<button>Empty editor</button>')
+                        .addClass('emptyButton')
+                        .button({
+                            text: false,
+                            icons: {
+                                primary: "ui-icon-trash"
+                            }
+                        })
+                        .click(emptyEditorContentFunc)
+                        .appendTo(leftPannelContainer);
+
+                    // Create the DONE button
+                    $('<button>Done</button>')
+                        .addClass('buttonStyle doneButton')
+                        .click( function (e) {
+                            formElement.dialog('close');
+                        })
+                        .button()
+                        .appendTo(leftPannelContainer);
+
+                    /*** Right pannel contents ***/
+
+                    $('<div class="title"><label>Javascript Code</label></div>')
+                        .appendTo(rightPannel);
+
+                    // Construct code editor element
+                    eventEditorContainer = $('<div/>')
+                        .addClass('container')
+                        .appendTo(rightPannel);
+                    eventEditor = CodeMirror(
+                        eventEditorContainer[0],
+                        {
+                            mode: "javascript",
+                            readOnly: 'nocursor',
+                        }
+                    );
+                    eventEditorContainer.show();
+
+                    /*** Dialog contents ***/
+
+                    formElement = $('<form>')
+                        .attr('id', 'eventHandlerDialog')
+                        .append(formContainer)
+                        .dialog({
+                            title: "Event Handlers("
+                                + BWidget.getDisplayLabel(type)
+                                + (node.getProperty('id') ?
+                                    "#" + node.getProperty('id'):'') + ")",
+                            modal: true,
+                            width: 769,
+                            height: 460,
+                            resizable: false
+                         })
+                        .bind('dialogclose', function(e) {
+                            $(this).trigger('submit');
+                        })
+                        .bind('submit', function(e) {
+                            e.preventDefault();
+                            var results, result, matchedProps, id, eventCode, 
+                                eventName, design = ADM.getDesignRoot(),
+                                jsCode = '$(document).ready(function(e) {\n';
+                            
+                            // Generate the ID automatically.
+                            var uniqueIdName = 'id'
+                            // Check if the element has ID property.
+                            if(typeof(BWidget.propertyExists(node.getType(), uniqueIdName)) == 'undefined') {
+                                alert('Event handler must be using with the element have ID property.');
+                                return false;
+                            };
+
+                            // When the ID property of node is blank, generate
+                            // a unique one.
+                            if(node.getProperty(uniqueIdName) == '') {
+                                node.generateUniqueProperty(
+                                    uniqueIdName, true
+                                );
+                            }
+
+                            // Serialize the form data to JSON.
+                            var formData = $(this).serializeJSON();
+                            formData['jsCode'] = eventEditor.getValue();
+
+                            // Save editor content to ADM property.
+                            if (formData.currentEvent) {
+                                node.setProperty(
+                                    formData.currentEvent,
+                                    formData.jsCode
+                                );
+                            }
+
+
+                            // Regenerate the whole event javascript codes
+                            // and fill into sandbox.
+                            results = design.findNodesByProperty(
+                                {'type': 'event'}
+                            );
+                            for (var i=0; (result = results[i]); i++) {
+                                id = result.node.getProperty('id');
+                                if (!id)
+                                    continue
+                                matchedProps = result.properties;
+                                for (eventName in matchedProps) {
+                                    eventCode = matchedProps[eventName];
+                                    // If ID property or eventCode is not defined, then next.
+                                    if (!eventCode)
+                                        continue;
+                                    // Append the event code to the whole js code content.
+                                    jsCode += '$("#' + id + '").bind("' + eventName + '", function(e) {'
+                                        + '\n' + eventCode + '\n'
+                                        + '});\n\n';
+                                }
+                            }
+                            jsCode += '});';
+                            // Make the JS code more beautiful.
+                            jsCode = js_beautify(jsCode);
+                            $.rib.addCustomFile(
+                                'src/js/main.js', 'js', jsCode
+                            );
+
+                            // Load the jsCode
+                            //
+                            // Checking the event select element changed
+                            //
+                            // If old event is not equal to current event in
+                            // select, it's meaning the select changed not
+                            // the window close, so we need to load the JS
+                            // code from new selected property and change the
+                            // editor content.
+                            if (formData.currentEvent != formData.selectedEvent) {
+                                // Check the selection of event, if selected
+                                // blank will clean up the editor content and
+                                // set editor to be read only.
+                                if (!formData.selectedEvent) {
+                                    eventEditor.setValue('');
+                                    eventEditor.setOption(
+                                        'readOnly', 'nocursor'
+                                    );
+                                    return;
+                                }
+
+                                // Load the event property content and set the
+                                // editor content
+                                jsCode = node.getProperty(
+                                    formData.selectedEvent
+                                );
+                                if (typeof(jsCode) != 'string')
+                                    jsCode = '';
+                                eventEditor.setOption('readOnly', false);
+                                eventEditor.setValue(jsCode);
+                                eventElement.val(formData.selectedEvent);
+                            };
+                        });
                 });
 
             function validValue(element, type) {
