@@ -1404,11 +1404,6 @@ var BWidgetRegistry = {
     ButtonList: {
         parent: "SimpleList",
         paletteImageName: "jqm_button_list.svg",
-        zones: [
-            {
-                allow: [ "ButtonListItem"]
-            }
-        ]
     },
 
     /**
@@ -1417,11 +1412,6 @@ var BWidgetRegistry = {
     TextList: {
         parent: "SimpleList",
         paletteImageName: "jqm_text_list.svg",
-        zones: [
-            {
-                allow: [ "TextListItem" ]
-            }
-        ]
     },
 
     /**
@@ -1431,11 +1421,6 @@ var BWidgetRegistry = {
         parent: "SimpleList",
         paletteImageName: "jqm_icon_list.svg",
         template: '<ul data-role="listview">',
-        zones: [
-            {
-                allow: [ "IconListItem" ]
-            }
-        ]
     },
 
     /**
@@ -1445,11 +1430,6 @@ var BWidgetRegistry = {
         parent: "SimpleList",
         paletteImageName: "jqm_thumbnail_list.svg",
         template: '<ul data-role="listview">',
-        zones: [
-            {
-                allow: [ "ThumbnailListItem" ]
-            }
-        ]
     },
     /**
      * Represents a base List widget
@@ -1466,11 +1446,28 @@ var BWidgetRegistry = {
                 htmlAttribute: "data-divider-theme"
             })
         },
+        getItemType: function (listType) {
+            if (listType !== "OrderedList")
+                 return listType + "Item";
+            else
+                 return "SimpleListItem";
+        },
         zones: [
             {
                 name: "default",
                 cardinality: "N",
-                allow: [ "SimpleListItem", "ListDivider" ]
+                morph: function (childType, thisType) {
+                    if (childType === "SimpleListItem") {
+                        if (thisType === "OrderedList")
+                            return "SimpleListItem";
+                        else
+                            return thisType + "Item";
+                    }
+                    return childType;
+                },
+                allow: function (type) {
+                   return [ BWidgetRegistry.ListBase.getItemType(type), "ListDivider" ];
+                }
             }
         ],
         delegate: function (domNode, admNode) {
@@ -1516,13 +1513,6 @@ var BWidgetRegistry = {
     ThumbnailSplitList: {
         parent: "SimpleSplitList",
         paletteImageName: "jqm_thumbnail_split_list.svg",
-        zones: [
-            {
-                name: "default",
-                cardinality: "N",
-                allow: [ "ThumbnailSplitListItem"]
-            }
-        ],
     },
 
     /**
@@ -1550,11 +1540,6 @@ var BWidgetRegistry = {
             }
         },
         template: '<ul data-role="listview">',
-        zones: [
-            {
-                allow: [ "SimpleSplitListItem"]
-            }
-        ]
     },
 
     /**
@@ -1563,11 +1548,6 @@ var BWidgetRegistry = {
     TextSplitList: {
         parent: "SimpleSplitList",
         paletteImageName: "jqm_text_split_list.svg",
-        zones: [
-            {
-                allow: [ "TextSplitListItem"]
-            }
-        ]
     },
 
     /**
@@ -1576,21 +1556,16 @@ var BWidgetRegistry = {
     IconSplitList: {
         parent: "SimpleSplitList",
         paletteImageName: "jqm_icon_split_list.svg",
-        zones: [
-            {
-                allow: [ "IconSplitListItem"]
-            }
-        ]
     },
 
     /**
-     * Represents a list item element.
+     * Represents a generic list item element.
      */
     SimpleListItem: {
         parent: "Base",
-        displayLabel: "Simple List Item",
+        displayLabel: "List Item",
         paletteImageName: "jqm_list_item.svg",
-        allowIn: [ "SimpleList", "OrderedList" ],
+        allowIn: [ "ListBase" ],
         editable: {
             selector: "",
             propertyName: "text"
@@ -1622,7 +1597,7 @@ var BWidgetRegistry = {
         zones: [
             {
                 name: "default",
-                cardinality: "1",
+                cardinality: { min: "1", max: "1"},
                 allow: [ "ListButton" ]
             }
         ],
@@ -1642,6 +1617,7 @@ var BWidgetRegistry = {
         template: '<li></li>',
         zones: [
             {
+                name: "default",
                 allow: [ "TextButton" ]
             },
         ],
@@ -1662,6 +1638,7 @@ var BWidgetRegistry = {
         template: '<li></li>',
         zones: [
             {
+                name: "default",
                 allow: [ "IconButton" ]
             }
         ],
@@ -1682,6 +1659,7 @@ var BWidgetRegistry = {
         template: '<li></li>',
         zones: [
             {
+                name: "default",
                 allow: [ "ThumbnailButton" ]
             }
         ],
@@ -1702,14 +1680,8 @@ var BWidgetRegistry = {
         zones: [
             {
                 name: "left",
-                cardinality: "1",
                 allow: [ "ThumbnailButton" ]
             },
-            {
-                name: "right",
-                cardinality: "1",
-                allow: [ "ListButton" ]
-            }
         ],
         init: function (node) {
             // initial state is three buttons
@@ -1722,7 +1694,7 @@ var BWidgetRegistry = {
      * Represents a SplitListItem element.
      */
     SimpleSplitListItem: {
-        parent: "ButtonListItem",
+        parent: "SimpleListItem",
         displayLabel: "Simple Split List Item",
         paletteImageName: "jqm_simple_split_list_item.svg",
         allowIn: [ "SimpleSplitList" ],
@@ -1735,7 +1707,12 @@ var BWidgetRegistry = {
         zones: [
             {
                 name: "left",
-                cardinality: "2",
+                cardinality: {min: "1", max: "1"},
+                allow: [ "ListButton" ]
+            },
+            {
+                name: "right",
+                cardinality: {min: "1", max: "1"},
                 allow: [ "ListButton" ]
             }
         ],
@@ -1757,12 +1734,10 @@ var BWidgetRegistry = {
         zones: [
             {
                 name: "left",
-                cardinality: "1",
                 allow: [ "IconButton" ]
             },
             {
                 name: "right",
-                cardinality: "1",
                 allow: [ "ListButton" ]
             }
         ],
@@ -1784,12 +1759,10 @@ var BWidgetRegistry = {
         zones: [
             {
                 name: "left",
-                cardinality: "1",
                 allow: [ "TextButton" ]
             },
             {
                 name: "right",
-                cardinality: "1",
                 allow: [ "ListButton" ]
             }
         ],
@@ -1807,7 +1780,7 @@ var BWidgetRegistry = {
         parent: "SimpleListItem",
         displayLabel: "List Divider",
         paletteImageName: "jqm_list_divider.svg",
-        allowIn: [ "SimpleList", "OrderedList", "ButtonList", "TextList", "IconList", "ThumbnailList" ],
+        allowIn: [ "ListBase" ], 
         properties: {
             text: {
                 defaultValue: "List Divider"
