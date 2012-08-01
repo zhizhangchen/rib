@@ -1466,6 +1466,15 @@ var BWidgetRegistry = {
             {
                 name: "default",
                 cardinality: "N",
+                morph: function (childType, thisType) {
+                    if (childType === "SimpleListItem") {
+                        if (thisType === "OrderedList")
+                            return "SimpleListItem";
+                        else
+                            return thisType + "Item";
+                    }
+                    return childType;
+                },
                 allow: [ "SimpleListItem", "ListDivider" ]
             }
         ],
@@ -1564,13 +1573,13 @@ var BWidgetRegistry = {
     },
 
     /**
-     * Represents a list item element.
+     * Represents a generic list item element.
      */
     SimpleListItem: {
         parent: "Base",
-        displayLabel: "Simple List Item",
+        displayLabel: "List Item",
         paletteImageName: "jqm_list_item.svg",
-        allowIn: [ "SimpleList", "OrderedList" ],
+        allowIn: [ "ListBase" ],
         editable: {
             selector: "",
             propertyName: "text"
