@@ -61,6 +61,10 @@ var DEBUG = true,
         attrName = BWidget.getPropertyHTMLAttribute(node.getType(), propName);
         propValue = newValue || node.getProperty(propName);
         attrValue = propValue;
+        if (typeof attrName === "function") {
+            attrValue = attrName(propValue)["value"];
+            attrName = attrName(propValue)["name"];
+        }
         if (typeof attrName  === "object") {
             attrMap = attrName;
             attrName = attrMap.name;

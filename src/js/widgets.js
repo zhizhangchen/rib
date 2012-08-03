@@ -660,13 +660,19 @@ var BWidgetRegistry = {
             target: {
                 type: "targetlist",
                 defaultValue: "",
-                htmlAttribute: "href"
+                htmlAttribute: function(value) {
+                    if (value === "previous page") {
+                        return {"name": "data-rel", "value": "back"};
+                    } else {
+                        return {"name": "href", "value": value};
+                    }
+                }
             },
             opentargetas : {
                 type: "string",
                 displayName: "open target as",
-                options: ["default", "page", "dialog"],
-                defaultValue: "default",
+                options: ["page", "dialog"],
+                defaultValue: "page",
                 htmlAttribute: "data-rel"
             },
             icon: BCommonProperties.icon,
@@ -701,17 +707,6 @@ var BWidgetRegistry = {
                            "flip", "turn", "flow", "slidefade", "none" ],
                 defaultValue: "slide",
                 htmlAttribute: "data-transition"
-            },
-            back: {
-                type: "boolean",
-                defaultValue: false,
-                htmlAttribute: {
-                    name: "data-rel",
-                    value: {
-                        "true": "back",
-                        "false": ""
-                    }
-                }
             },
             corners: {
                 type: "boolean",
