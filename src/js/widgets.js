@@ -148,7 +148,8 @@ var BCommonProperties = {
  * Each zone description in the array should be an object with:
  *   1) name identifying the zone point
  *   2) cardinality, either "1" or "N" representing number of contained items
- *   3) allow: string or array of string names of allowable widgets
+ *   3) allow: string or array of string names or a function that returns
+ *             a string or an array of allowable widgets
  *               (all others will be denied)
  *   4) deny: string or array of string names of disallowed widgets
  *             (all others will be allowed)
@@ -2437,6 +2438,7 @@ var BWidget = {
                 }
             }
         }
+        console.log(BWidgetRegistry);
     },
 
     /**
@@ -3157,6 +3159,8 @@ var BWidget = {
                         childType = morph(childType, parentType);
                     allow = zones[i].allow;
                     if (allow) {
+                        if (typeof allow === "function")
+                            allow = allow(parentType);
                         return BWidget.isTypeInList(childType, allow);
                     }
                     deny = zones[i].deny;
