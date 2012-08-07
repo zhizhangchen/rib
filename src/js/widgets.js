@@ -1586,7 +1586,6 @@ var BWidgetRegistry = {
                 htmlAttribute: "data-filter-placeholder"
             }
         },
-        template: '<ul data-role="listview">',
     },
 
     /**
@@ -1611,7 +1610,6 @@ var BWidgetRegistry = {
     IconList: {
         parent: "SimpleList",
         paletteImageName: "jqm_icon_list.svg",
-        template: '<ul data-role="listview">',
     },
 
     /**
@@ -1620,7 +1618,6 @@ var BWidgetRegistry = {
     ThumbnailList: {
         parent: "SimpleList",
         paletteImageName: "jqm_thumbnail_list.svg",
-        template: '<ul data-role="listview">',
     },
     /**
      * Represents a base List widget
@@ -1632,6 +1629,10 @@ var BWidgetRegistry = {
             inset: BCommonProperties.inset,
             filter: BCommonProperties.filter,
             theme: BCommonProperties.theme,
+            ordered: {
+                type: "boolean",
+                defaultValue: false,
+            },
             divider_theme: $.extend({}, BCommonProperties.theme, {
                 displayName: "divider theme",
                 htmlAttribute: "data-divider-theme"
@@ -1677,6 +1678,12 @@ var BWidgetRegistry = {
             // Reconstruct the domNode.
             return filterForm.wrap(newNode).parent().append(domNode);
         },
+        template: function (node) {
+            if (node.getProperty("ordered"))
+             return $('<ol data-role="listview">');
+            else
+             return $('<ul data-role="listview">');
+        },
         init: function (node) {
             // initial state is three button ListItem
             var i;
@@ -1687,15 +1694,6 @@ var BWidgetRegistry = {
                 node.addChild(ADM.createNode(itemName));
             }
         }
-    },
-
-    /**
-     * Represents an ordered list element.
-     */
-    OrderedList: {
-        parent: "ListBase",
-        paletteImageName: "jqm_ordered_list.svg",
-        template: '<ol data-role="listview">',
     },
 
     /**
@@ -1730,7 +1728,6 @@ var BWidgetRegistry = {
                 htmlAttribute: "data-split-icon"
             }
         },
-        template: '<ul data-role="listview">',
     },
 
     /**
