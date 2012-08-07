@@ -2741,7 +2741,8 @@ var BWidget = {
     getPropertyHTMLSelector: function (widgetType, property) {
         var schema = BWidget.getPropertySchema(widgetType, property);
         if (schema) {
-            return schema.htmlSelector;
+            return schema.htmlSelector !== undefined ? schema.htmlSelector :
+                BWidget.getWidgetAttribute(widgetType, "defaultHtmlSelector");
         }
         return schema;
     },
