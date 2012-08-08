@@ -2460,7 +2460,7 @@ var BWidget = {
     init: function () {
         // effects: add the type and displayLabel properties to widget
         //          registry objects
-        var type, parentName, newZones, descendantZone, descendantZoneIndex;
+        var type, newZones, descendantZone, descendantZoneIndex;
         for (type in BWidgetRegistry) {
             if (BWidgetRegistry.hasOwnProperty(type)) {
                 BWidgetRegistry[type].type = type;
@@ -2496,8 +2496,7 @@ var BWidget = {
                 if (type === "OptionHeader") {
                     BWidgetRegistry[type].displayLabel = "Option Header";
                 }
-                parentName = BWidgetRegistry[type].parent;
-                while (parentName) {
+                $.each(BWidget.getAncestors(type), function (i, parentName) {
                     if (BWidgetRegistry[parentName].zones) {
                         newZones = [];
                         $.each(BWidgetRegistry[parentName].zones, function (i, pZone) {
@@ -2519,8 +2518,7 @@ var BWidget = {
                             $.merge(BWidgetRegistry[type].zones, newZones);
                     }
                     BWidgetRegistry[type] = $.extend(true, true, {}, BWidgetRegistry[parentName], BWidgetRegistry[type]);
-                    parentName = BWidgetRegistry[parentName].parent;
-                }
+                });
             }
         }
     },
@@ -3158,6 +3156,20 @@ var BWidget = {
     },
 
     // helper function
+    getAncestors: function (type) {
+        var ancestors = [],
+            parents = BWidgetRegistry[type].parent;
+        if (!parents)
+            return [];
+        if ( typeof parents === "string")
+            parents = [parents];
+        ancestors = $.merge(ancestors, parents);
+        $.each(parents, function (i, parentName) {
+            $.merge(ancestors, BWidget.getAncestors(parentName));
+        })
+        return ancestors;
+    },
+    // helper function
     isTypeInList: function (type, list) {
         // requires: list can be an array, a string, or invalid
         //  returns: true, if type is the list string, or type is one of the
@@ -3167,11 +3179,7 @@ var BWidget = {
         isType = function (srcType, targetType) {
             if (srcType === targetType)
                 return true;
-            while (srcType && (srcType = BWidgetRegistry[srcType].parent)) {
-                if (srcType === targetType)
-                    return true;
-            }
-            return false;
+            return BWidget.getAncestors(srcType).indexOf(targetType) !== -1;
         };
         if (list) {
             if (isType(type, list)) {
