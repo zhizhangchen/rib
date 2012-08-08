@@ -86,6 +86,46 @@ var BCommonProperties = {
         options: [ "default", "a", "b", "c", "d", "e" ],
         defaultValue: "default",
         htmlAttribute: "data-track-theme"
+    },
+    click: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
+    },
+    tap: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
+    },
+    taphold: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
+    },
+    swipe: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
+    },
+    swipeleft: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
+    },
+    swiperight: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
+    },
+    scrollstart: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
+    },
+    scrollstop: {
+        type: "event",
+        defaultValue: "",
+        visible: false,
     }
 };
 
@@ -340,7 +380,67 @@ var BWidgetRegistry = {
                 type: "string",
                 defaultValue: "",
                 htmlAttribute: "data-title",
-            }
+            },
+            pagebeforeload: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pageload: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pageloadfailed: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pagebeforechange: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pagechange: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pagechangefailed: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pagebeforeshow: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pagebeforehide: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pageshow: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pagebeforecreate: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pagecreate: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
+            pageremove: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
+            },
         },
         redirect: {
             zone: "content",
@@ -598,7 +698,11 @@ var BWidgetRegistry = {
                 options: [ "span", "h1", "h2", "h3", "h4", "h5", "h6",
                            "label", "p", "em", "strong" ],
                 defaultValue: "span"
-            }
+            },
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
+
         },
         editable: {
             selector: "",
@@ -722,7 +826,10 @@ var BWidgetRegistry = {
                 type: "boolean",
                 defaultValue: true,
                 htmlAttribute: "data-shadow",
-            }
+            },
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: '<a data-role="button">%TEXT%</a>'
     },
@@ -768,7 +875,10 @@ var BWidgetRegistry = {
                         "right": "display:block;margin: auto 0px auto auto"
                     }
                 }
-            }
+            },
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         }
     },
 
@@ -805,6 +915,11 @@ var BWidgetRegistry = {
                 defaultValue: "POST",
                 htmlAttribute: "method",
                 forceAttribute: true
+            },
+            submit: {
+                type: "event",
+                defaultValue: "",
+                visible: false,
             }
         }
     },
@@ -873,7 +988,10 @@ var BWidgetRegistry = {
             },
             disabled: $.extend({}, BCommonProperties.disabled, {
                 htmlSelector: "input"
-            })
+            }),
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         editable: {
             selector: "label",
@@ -953,7 +1071,10 @@ var BWidgetRegistry = {
             }),
             nativecontrol: $.extend({}, BCommonProperties.nativecontrol, {
                 htmlSelector: "input"
-            })
+            }),
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: '<div data-role="fieldcontain"><label for="%ID%">%LABEL%</label><input type="text"/></div>'
     },
@@ -986,7 +1107,10 @@ var BWidgetRegistry = {
                 defaultValue: ""
             },
             disabled: BCommonProperties.disabled,
-            nativecontrol: BCommonProperties.nativecontrol
+            nativecontrol: BCommonProperties.nativecontrol,
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: '<textarea>%VALUE%</textarea>'
     },
@@ -1019,7 +1143,10 @@ var BWidgetRegistry = {
             theme: BCommonProperties.theme,
             track_theme: BCommonProperties.track_theme,
             disabled: BCommonProperties.disabled,
-            nativecontrol: BCommonProperties.nativecontrol
+            nativecontrol: BCommonProperties.nativecontrol,
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: '<select data-role="slider"><option value="%VALUE1%">%LABEL1%</option><option value="%VALUE2%">%LABEL2%</option></select>',
         delegate: function (domNode, admNode) {
@@ -1110,7 +1237,12 @@ var BWidgetRegistry = {
             }),
             iconpos: $.extend({}, BCommonProperties.iconpos, {
                 defaultValue: "right"
-            })
+            }),
+            change: {
+                type: "event",
+                defaultValue: "",
+                visible: false
+            }
         },
         zones: [
             {
@@ -1150,7 +1282,10 @@ var BWidgetRegistry = {
             value: {
                 type: "string",
                 defaultValue: ""
-            }
+            },
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: '<option>%TEXT%</option>'
     },
@@ -1236,7 +1371,10 @@ var BWidgetRegistry = {
             },
             checked: BCommonProperties.checked,
             theme: BCommonProperties.theme,
-            disabled: BCommonProperties.disabled
+            disabled: BCommonProperties.disabled,
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         delegate: 'parent',
         template: function (node) {
@@ -1338,7 +1476,10 @@ var BWidgetRegistry = {
             checked: BCommonProperties.checked,
             mini: BCommonProperties.mini,
             theme: BCommonProperties.theme,
-            disabled: BCommonProperties.disabled
+            disabled: BCommonProperties.disabled,
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: '<input type="checkbox"><label for="%ID%">%LABEL%</label>',
         delegate: 'parent'
@@ -1428,7 +1569,10 @@ var BWidgetRegistry = {
                 type: "string",
                 defaultValue: "",
                 htmlAttribute: "data-filtertext",
-            }
+            },
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: '<li>%TEXT%</li>'
     },
@@ -1487,7 +1631,10 @@ var BWidgetRegistry = {
                 type: "string",
                 displayName: "count bubble",
                 defaultValue: ""
-            }
+            },
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         template: function (node) {
             var prop, countBubble, code = $('<li><a>%TEXT%</a></li>');
@@ -1845,7 +1992,10 @@ var BWidgetRegistry = {
             data_color: {
                 type: "string",
                 defaultValue: "#1a8039"
-            }
+            },
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
         },
         delegate: 'next'
     },
@@ -1902,7 +2052,12 @@ var BWidgetRegistry = {
         parent: "Base",
         paletteImageName: "tizen_vertical_toggle_switch.svg",
         template: '<div data-role="toggleswitch" />',
-        delegate: 'next'
+        delegate: 'next',
+        properties: {
+            click: BCommonProperties.click,
+            tap: BCommonProperties.tap,
+            taphold: BCommonProperties.taphold
+        }
     },
 
     OptionHeader: {
