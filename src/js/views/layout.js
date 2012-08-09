@@ -160,7 +160,6 @@
         _iframeLoaded: function (event) {
             event.data.loaded = true;
             event.data.refresh(null, event.data);
-            $.rib.enableKeys(event.data.options.contentDocument);
             event.data.options.contentDocument[0].contentEditable = false;
         },
 
@@ -295,6 +294,7 @@
             contents = this._serializeFramework(this.designRoot);
             doc.writeln(contents);
             doc.close();
+            $.rib.enableKeys($(doc.documentElement));
         },
 
         _serializeFramework: function () {
