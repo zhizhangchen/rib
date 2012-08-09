@@ -1577,8 +1577,6 @@ var BWidgetRegistry = {
      */
     ButtonListItem: {
         parent: "ListItemBase",
-        displayLabel: "Button List Item",
-        paletteImageName: "jqm_button_list_item.svg",
         allowIn: [ "ButtonList" ],
         editable: {
             selector: ".ui-btn-text > a",
@@ -1598,8 +1596,6 @@ var BWidgetRegistry = {
      */
     TextListItem: {
         parent: "ListItemBase",
-        displayLabel: "Text List Item",
-        paletteImageName: "jqm_text_list_item.svg",
         allowIn: [ "TextList" ],
         zones: [
             {
@@ -1627,8 +1623,6 @@ var BWidgetRegistry = {
      */
     IconListItem: {
         parent: "ButtonListItem",
-        displayLabel: "Icon List Item",
-        paletteImageName: "jqm_icon_list_item.svg",
         allowIn: [ "IconList" ],
         properties: {
             text: {
@@ -1674,8 +1668,6 @@ var BWidgetRegistry = {
      */
     ThumbnailListItem: {
         parent: "ListItemBase",
-        displayLabel: "Thumbnail List Item",
-        paletteImageName: "jqm_thumbnail_list_item.svg",
         allowIn: [ "ThumbnailList"],
         zones: [
             {
@@ -1710,8 +1702,6 @@ var BWidgetRegistry = {
      */
     ThumbnailSplitListItem: {
         parent: "SplitListItemBase",
-        displayLabel: "Thumbnail Split List Item",
-        paletteImageName: "jqm_thumbnail_split_list_item.svg",
         allowIn: [ "ThumbnailSplitList" ],
         zones: [
             {
@@ -1767,8 +1757,6 @@ var BWidgetRegistry = {
      */
     ButtonSplitListItem: {
         parent: [ "ButtonListItem", "SplitListItemBase" ],
-        displayLabel: "Button Split List Item",
-        paletteImageName: "jqm_button_split_list_item.svg",
         allowIn: [ "ButtonSplitList" ],
     },
 
@@ -1777,8 +1765,6 @@ var BWidgetRegistry = {
      */
     IconSplitListItem: {
         parent: [ "IconListItem", "ButtonSplitListItem" ],
-        displayLabel: "Icon Split List Item",
-        paletteImageName: "jqm_icon_split_list_item.svg",
         allowIn: [ "IconSplitList" ],
     },
 
@@ -1787,8 +1773,6 @@ var BWidgetRegistry = {
      */
     TextSplitListItem: {
         parent: [ "TextListItem", "SplitListItemBase" ],
-        displayLabel: "Text Split List Item",
-        paletteImageName: "jqm_text_split_list_item.svg",
         allowIn: [ "TextSplitList" ],
         init: function (node) {
             BWidgetRegistry.TextListItem.init(node);
@@ -1817,8 +1801,6 @@ var BWidgetRegistry = {
      */
     ListButton: {
         parent: "ButtonBase",
-        displayLabel: "Extra Button",
-        paletteImageName: "jqm_list_button.svg",
         allowIn: [ "SplitListItemBase"],
         properties: {
             text: {
