@@ -257,7 +257,8 @@
         },
 
         _modelUpdatedHandler: function (event, widget) {
-            var win, aPage, pageNode;
+            var win, aPage, pageNode,
+                oldScrollTop = (widget.options.contentDocument.scrollTop());
 
             widget = widget || this;
 
@@ -282,6 +283,11 @@
             } else {
                 console.error(widget.widgetName, ':: Missing contentDocument');
             }
+            widget.options.contentDocument.scrollTop(oldScrollTop);
+            // Make sure Make sure selected node is visible
+            widget.options.contentDocument.find('.ui-selected').first().each(function () {
+                this.scrollIntoViewIfNeeded()
+            });
         },
 
         _createDocument: function () {
