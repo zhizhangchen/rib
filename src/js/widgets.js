@@ -589,6 +589,20 @@ var BWidgetRegistry = {
         }
     },
 
+    Div: {
+        parent: "Base",
+        dragHeader: true,
+        paletteImageName: "jqm_div.svg",
+        allowIn: "Content",
+        template: '<div></div>',
+        zones: [
+            {
+                name: "default",
+                cardinality: "N"
+            }
+        ]
+    },
+
     /**
      * Represents simple text in the layout, possibly wrapped with a tag like
      * <h1> ... <h6>, <p>, <em>, etc.
