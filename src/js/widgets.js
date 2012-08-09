@@ -1790,6 +1790,10 @@ var BWidgetRegistry = {
         displayLabel: "Text Split List Item",
         paletteImageName: "jqm_text_split_list_item.svg",
         allowIn: [ "TextSplitList" ],
+        init: function (node) {
+            BWidgetRegistry.TextListItem.init(node);
+            BWidgetRegistry.SplitListItemBase.init(node);
+        }
     },
 
     /**
