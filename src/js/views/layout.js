@@ -160,7 +160,6 @@
         _iframeLoaded: function (event) {
             event.data.loaded = true;
             event.data.refresh(null, event.data);
-            $.rib.enableKeys(event.data.options.contentDocument);
             event.data.options.contentDocument[0].contentEditable = false;
         },
 
@@ -258,7 +257,8 @@
         },
 
         _modelUpdatedHandler: function (event, widget) {
-            var win, aPage, pageNode;
+            var win, aPage, pageNode,
+                oldScrollTop = (widget.options.contentDocument.scrollTop());
 
             widget = widget || this;
 
@@ -283,6 +283,11 @@
             } else {
                 console.error(widget.widgetName, ':: Missing contentDocument');
             }
+            widget.options.contentDocument.scrollTop(oldScrollTop);
+            // Make sure Make sure selected node is visible
+            widget.options.contentDocument.find('.ui-selected').first().each(function () {
+                this.scrollIntoViewIfNeeded()
+            });
         },
 
         _createDocument: function () {
@@ -295,6 +300,7 @@
             contents = this._serializeFramework(this.designRoot);
             doc.writeln(contents);
             doc.close();
+            $.rib.enableKeys($(doc.documentElement));
         },
 
         _serializeFramework: function () {
