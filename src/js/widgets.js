@@ -314,10 +314,11 @@ var BWidgetRegistry = {
         properties: {
             background: {
                 type: "url-uploadable",
-                defaultValue: "",
+                defaultValue: {},
                 htmlAttribute: "style",
                 htmlValueMap: function (propValue) {
-                    return "background-image: url('" + propValue + "'); " +
+                    return "background-image: url('" +
+                        propValue + "'); " +
                         "background-attachment: fixed; " +
                         "background-repeat: no-repeat; " +
                         "background-size: 100% 100%;";
@@ -773,7 +774,10 @@ var BWidgetRegistry = {
         properties: {
             src: {
                 type: "url-uploadable",
-                defaultValue: "",
+                defaultValue: {
+                    value: "src/css/images/widgets/tizen_image.svg",
+                    inSandbox: false
+                },
                 htmlAttribute: "src",
                 forceAttribute: true
             },
@@ -1700,6 +1704,7 @@ var BWidgetRegistry = {
             var prop, iconsrc,
                 code = BWidgetRegistry.ButtonListItem.template(node);
             prop = node.getProperty("iconsrc");
+            prop = prop.value || prop;
             // Add the icon if iconsrc property is not blank
             if (prop.trim() != '') {
                 iconsrc = $('<img/>')
@@ -2705,6 +2710,7 @@ var BWidget = {
     getPropertySerializableValue: function (widgetType, property, value) {
         var mapped, valueMap;
         valueMap = BWidget.getPropertyValueMap(widgetType, property);
+        value = (value && value.value) || value;
         if (typeof valueMap === "function") {
             mapped = valueMap(value);
         } else if (typeof valueMap === "object") {
