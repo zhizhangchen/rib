@@ -2023,11 +2023,15 @@ ADMNode.prototype.foreach = function (func) {
  * @param {String} The name of the property.
  * @return {String} The generated property value.
  */
-ADMNode.prototype.generateUniqueProperty = function (property) {
+ADMNode.prototype.generateUniqueProperty = function (property, force) {
     var generate, design, myType, length, i, genLength, max, num, existing = [];
     myType = this.getType();
     generate = BWidget.getPropertyAutoGenerate(myType, property);
-    if (!generate) {
+    // If force argument is set, then set the generate as myType and continue
+    // to run.
+    if (!generate && force) {
+        generate = myType.toLowerCase();
+    } else if (!generate) {
         return undefined;
     }
 
@@ -2294,8 +2298,17 @@ ADMNode.prototype.isPropertyExplicit = function (property) {
  *                  relevant info for performing an undo of this operation.
  */
 ADMNode.prototype.setProperty = function (property, value, data, raw) {
-    var orig, func, changed, type, rval = { }, defaultValue;
-    type = BWidget.getPropertyType(this.getType(), property);
+    var orig, func, changed, rval = { }, defaultValue, eventName, node,
+        oldValue, cfm, node = this,
+        type = BWidget.getPropertyType(this.getType(), property);
+
+    // Test the node have event handlers
+    function haveEventHandlers() {
+        return !$.isEmptyObject(node.getMatchingProperties(
+            {'type': 'event', 'value': new RegExp('.+')}
+        ));
+    } 
+
     if (!type) {
         console.error("Error: attempted to set non-existent property: " +
                     property);
@@ -2329,6 +2342,19 @@ ADMNode.prototype.setProperty = function (property, value, data, raw) {
         if (value === "" && this._inheritance[0] === "Page") {
             console.error("Error: page id cannot be null");
             return rval;
+        }
+
+        // When widget that have event handlers, after user make the ID
+        // property be blank, then popup a confirm dialog.
+        if (value === "" && haveEventHandlers()) {
+            oldValue = this.getProperty(property);
+            cfm = confirm(
+                'All event handlers of this widget will stop working and can\'t be exported if the ID property is empty. Are you sure you want to set the ID property to empty?'
+            );
+            if (!cfm) {
+                // Restore to old value.
+                return rval;
+            };
         }
     }
 
@@ -2364,6 +2390,14 @@ ADMNode.prototype.setProperty = function (property, value, data, raw) {
                             { type: "propertyChanged", node: this,
                               property: property, oldValue: orig,
                               newValue: value });
+
+        // Event handler saving after ID/event property changed.
+        if (property == 'id') {
+            if (haveEventHandlers())
+                $.rib.saveEventHandlers();
+        } else if (type == 'event') {
+            $.rib.saveEventHandlers();
+        }
         rval.result = true;
     }
     return rval;
