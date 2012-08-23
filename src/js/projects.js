@@ -320,6 +320,9 @@ $(function () {
                         $.rib.removeSandboxHeader('css', '/themes/' + oldThemeName + '.css');
                         $.rib.addSandboxHeader('css', '/themes/' + newThemeName + '.css');
                     }
+                    pmUtils.setProperty(pid, 'theme', newThemeName);
+                    // send themeChanged event to notify all views to update
+                    ADM.setTheme();
                 }
                 // if the item has schema then check the type
                 pmUtils.setProperty(pid, i, properties[i]);
