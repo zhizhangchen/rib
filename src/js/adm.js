@@ -518,7 +518,7 @@ ADM.endTransaction = function () {
  * @return {ADMNode} The child object, on success; null, on failure.
  */
 ADM.addChild = function (parentRef, childRef, dryrun) {
-    var parent, child;
+    var parent, child, oldParent, oldZone, oldZoneIndex;
 
     parent = ADM.toNode(parentRef);
     if (!parent) {
@@ -538,6 +538,11 @@ ADM.addChild = function (parentRef, childRef, dryrun) {
         return null;
     }
 
+    oldParent = child.getParent();
+    if (oldParent) {
+        oldZone = child.getZone();
+        oldZoneIndex = child.getZoneIndex();
+    }
     if (parent.addChild(child, dryrun)) {
         if (dryrun) {
             return true;
@@ -547,7 +552,10 @@ ADM.addChild = function (parentRef, childRef, dryrun) {
         ADM.transaction({
             type: "add",
             parent: child.getParent(),
-            child: child
+            child: child,
+            oldParent: oldParent,
+            oldZone: oldZone,
+            oldZoneIndex: oldZoneIndex
         });
         return child;
     }
@@ -634,7 +642,7 @@ ADM.addChildRecursive = function (parentRef, childRef, dryrun) {
  * @private
  */
 ADM.insertChildRelative = function (siblingRef, childRef, offset, dryrun) {
-    var sibling, child;
+    var sibling, child, oldParent, oldZone, oldZoneIndex;
 
     sibling = ADM.toNode(siblingRef);
     if (!sibling) {
@@ -655,6 +663,11 @@ ADM.insertChildRelative = function (siblingRef, childRef, offset, dryrun) {
                      childRef);
     }
 
+    oldParent = child.getParent();
+    if (oldParent) {
+        oldZone = child.getZone();
+        oldZoneIndex = child.getZoneIndex();
+    }
     if (sibling.insertChildRelative(child, offset, dryrun)) {
         if (dryrun) {
             return true;
@@ -663,7 +676,10 @@ ADM.insertChildRelative = function (siblingRef, childRef, offset, dryrun) {
             type: "insertRelative",
             sibling: sibling,
             child: child,
-            offset: offset
+            offset: offset,
+            oldParent: oldParent,
+            oldZone: oldZone,
+            oldZoneIndex: oldZoneIndex
         });
         return child;
     }
@@ -922,6 +938,9 @@ ADM.undo = function () {
         if (obj.type === "add") {
             ADM.ensurePageInactive(obj.child);
             obj.parent.removeChild(obj.child);
+            if (obj.oldParent) {
+                obj.oldParent.addChildToZone(obj.child, obj.oldZone, obj.oldZoneIndex);
+            }
         }
         else if (obj.type === "remove") {
             obj.parent.insertChildInZone(obj.child, obj.zone, obj.zoneIndex);
@@ -933,6 +952,9 @@ ADM.undo = function () {
         }
         else if (obj.type === "insertRelative") {
             obj.sibling.getParent().removeChild(obj.child);
+            if (obj.oldParent) {
+                obj.oldParent.addChildToZone(obj.child, obj.oldZone, obj.oldZoneIndex);
+            }
         }
         else if (obj.type === "propertyChange") {
             // TODO: this could require deeper copy of complex properties
@@ -1777,7 +1799,7 @@ ADMNode.prototype.insertChildInZone = function (child, zoneName, index,
         }
     }
 
-    var zone = this._zones[zoneName];
+    var zone = this._zones[zoneName], oldParent, oldZone, oldZoneIndex;
     if (!zone) {
         console.error("Error: zone not found in insertChildInZone: " +
                       zoneName);
@@ -1788,6 +1810,9 @@ ADMNode.prototype.insertChildInZone = function (child, zoneName, index,
         return false;
     }
     if (child instanceof ADMNode) {
+        oldParent = child.getParent();
+        if (oldParent)
+            return child.moveNode(this, zoneName, index, dryrun);
         if (!dryrun) {
             zone.splice(index, 0, child);
 
