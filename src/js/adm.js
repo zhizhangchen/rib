@@ -1865,6 +1865,9 @@ ADMNode.prototype.moveNode = function (newParent, zoneName, zoneIndex, dryrun) {
     oldZone = this._zone;
     oldIndex = this.getZoneIndex();
     removed = oldParent.removeChild(this, dryrun);
+    if (oldParent === newParent && oldZone === zoneName
+            && oldIndex < zoneIndex)
+        zoneIndex --;
 
     if (removed) {
         if (removed != this) {
