@@ -89,6 +89,16 @@
                 widget.refresh(event,widget);
             }
         },
+        _imagesUpdatedHandler: function(event, widget) {
+            widget = widget || this;
+            var optionsList, options;
+            if (widget.options.imagesDatalist) {
+                options = event.usageStatus || $.rib.pmUtils.resourceRef;
+                optionsList = widget.options.imagesDatalist.find('ul');
+                updateOptions(optionsList, Object.keys(options));
+            }
+            return;
+        },
 
         _showProperties: function(node) {
             var labelId, labelVal, valueId, valueVal, count,
@@ -113,6 +123,8 @@
                     .addClass('title')
                     .text(BWidget.getDisplayLabel(type)+' Properties');
             content.empty();
+            // git rib of old datalist element
+            this.options.imagesDatalist = null;
             propertyItems = $('<div/>').addClass("propertyItems")
                                     .appendTo(content);
             props = node.getProperties();
@@ -189,11 +201,13 @@
                         }].concat(Object.keys($.rib.pmUtils.resourceRef));
                         datalist = createDatalist(array);
                         if (!datalist) break;
-                        datalist.addClass('title upload-datalist').appendTo(value);
+                        datalist.addClass('title').appendTo(value);
                         datalist.find('input[type="text"]')
                             .attr('id', valueId)
                             .addClass('title labelInput')
                             .val(valueVal);
+                        // save the datalist for update
+                        this.options.imagesDatalist = $(this.options.imagesDatalist).add(datalist);
                         break;
 
                     case "record-array":
