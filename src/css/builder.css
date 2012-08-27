@@ -108,6 +108,9 @@ body.ui-tabs.ui-widget {
     height: 32px;
     max-height: 64px;
 }
+.smallbutton {
+    font-size: .8em !important; /* Override original size of jQuery UI button */
+}
 .hasflex {
     display: box;
     display: -webkit-box;
