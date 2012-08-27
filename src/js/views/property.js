@@ -248,9 +248,15 @@
                                     .end().end()
                                 .append('<td/>')
                                     .children().eq(3)
-                                    .append('<img/>')
+                                    .append('<a href="javascript:void(0);">Remove</a>')
                                         .children(':first')
-                                        .attr('src', "src/css/images/deleteButton_up.png")
+                                        .addClass('smallbutton')
+                                        .button({
+                                            text: false,
+                                            icons: {
+                                                 primary: "ui-icon-trash"
+                                            }
+                                        })
                                         // add delete option handler
                                         .click(function(e) {
                                             try {
