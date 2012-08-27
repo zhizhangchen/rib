@@ -587,7 +587,7 @@ $(function() {
                         pid = $(this).attr('data-uid'),
                         adm = window.parent.ADM,
                         root = adm.getDesignRoot(),
-                        nodeRef, newParent,
+                        nodeRef, newParent, newNode,
                         cid, pid,
                         sibling, children, parent,
                         role, prevItem = ui.item, nextItem = ui.item;
@@ -664,11 +664,11 @@ $(function() {
 
                     while (prevItem[0] || nextItem[0]) {
                         prevItem = prevItem.prev('.adm-node');
-                        if (prevItem[0] && (nodeRef = adm.insertChildAfter
+                        if (prevItem[0] && (newNode = adm.insertChildAfter
                                 (prevItem.attr('data-uid'), nodeRef)))
                             break;
                         nextItem = nextItem.next('.adm-node');
-                        if (nextItem[0] && (nodeRef = adm.insertChildBefore
+                        if (nextItem[0] && (newNode = adm.insertChildBefore
                                 (nextItem.attr('data-uid'), nodeRef)))
                             break;
                     }
@@ -678,13 +678,13 @@ $(function() {
                                               '.orig-adm-node.ui-sortable')
                                      .attr('data-uid');
                         newParent = pid && root.findNodeByUid(pid);
-                        if (!(nodeRef = adm.addChild(newParent, nodeRef))) {
+                        if (!(newNode = adm.addChild(newParent, nodeRef))) {
                             ui.item.remove();
                             return true;
                         }
                     }
-                    if (nodeRef)
-                        adm.setSelected(nodeRef);
+                    if (newNode)
+                        adm.setSelected(newNode);
                 }
             })
             .bind('mousedown.composer', function(event) {
