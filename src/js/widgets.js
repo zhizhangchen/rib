@@ -1764,7 +1764,7 @@ var BWidgetRegistry = {
             }
         },
         template: function(node) {
-            var prop, iconsrc, countBubble, code = $('<li></li>');
+            var prop, countBubble, code = $('<li></li>');
             prop = node.getProperty("countbubble");
             // Add the count bubble if countbubble property is not blank
             if (prop.trim() != '') {
@@ -1883,7 +1883,7 @@ var BWidgetRegistry = {
             text: {
                 defaultValue: "Icon List Item"
             },
-            iconsrc: {
+            icon: {
                 type: "url-uploadable",
                 defaultValue: "src/css/images/widgets/tizen_image.svg",
                 htmlSelector: "img",
@@ -1892,16 +1892,16 @@ var BWidgetRegistry = {
             },
         },
         template: function(node) {
-            var prop, iconsrc,
+            var prop, icon,
                 code = BWidgetRegistry.ButtonListItem.template(node);
-            prop = node.getProperty("iconsrc");
+            prop = node.getProperty("icon");
             prop = prop.value || prop;
-            // Add the icon if iconsrc property is not blank
+            // Add the icon if icon property is not blank
             if (prop.trim() != '') {
-                iconsrc = $('<img/>')
+                icon = $('<img/>')
                         .attr('width','16')
                         .attr('class', 'ui-li-icon');
-                code.find('a').append(iconsrc);
+                code.find('a').append(icon);
             };
             return code;
         }
