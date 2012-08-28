@@ -39,6 +39,10 @@
                                 * 0.4);
                 el.height(newHeight);
             });
+            this.element.delegate('*', 'focus', function(e){
+                window.focusElement = this;
+                e.stopPropagation();
+            });
 
             return this;
         },
@@ -80,13 +84,20 @@
             widget.refresh(event,widget);
         },
 
+        _setProperty: function(property, value) {
+            var viewId = property + '-value';
+            this.element.find("#" + viewId).val(value);
+        },
+
         _modelUpdatedHandler: function(event, widget) {
             var affectedWidget, id;
 
             widget = widget || this;
-            if (event && (event.type === "propertyChanged" &&
-                        event.node.getType() === 'Design')) {
-                return;
+            if (event && event.type === "propertyChanged") {
+                if (event.node.getType() === 'Design') {
+                    return;
+                }
+                widget._setProperty(event.property, event.newValue);
             } else {
                 widget.refresh(event,widget);
                 if (event.type === 'propertyChanged') {
