@@ -271,6 +271,41 @@ ADM.getDesignRoot = function () {
  * appropriate node.
  * @private
  */
+ADM.executeTransaction = function (child,  transObj, dryrun, action) {
+    var oldParent = child.getParent(), oldType, oldZone, oldZoneIndex;
+    if (oldParent) {
+        oldType = child.getType();
+        oldZone = child.getZone();
+        oldZoneIndex = child.getZoneIndex();
+    }
+    var thisRef = arguments[4];
+    var newArguments = [];
+    for (var i = 5; i < arguments.length; i ++) {
+        newArguments[i-5] = arguments[i];
+    }
+    if (action.apply(thisRef, newArguments)) {
+        if (dryrun) {
+            return true;
+        }
+        // use getParent below in case the child was redirected to another
+        // node (as in the case of Page/Content)
+        ADM.transaction($.extend(transObj, {
+            oldParent: oldParent,
+            oldType: oldType,
+            oldZone: oldZone,
+            oldZoneIndex: oldZoneIndex
+        }));
+        return child;
+    }
+    return false;
+}
+
+/**
+ * Not intended as a public API.
+ * An event handler to catch node removal and set the selection to the nearest
+ * appropriate node.
+ * @private
+ */
 ADM.adjustSelectionHandler = function (event) {
     // handle node removal by adjusting selection
     var zone, parent;
@@ -538,7 +573,7 @@ ADM.addChild = function (parentRef, childRef, dryrun) {
         return null;
     }
 
-    oldParent = child.getParent();
+    /*oldParent = child.getParent();
     if (oldParent) {
         oldType = child.getType();
         oldZone = child.getZone();
@@ -560,7 +595,14 @@ ADM.addChild = function (parentRef, childRef, dryrun) {
             oldZoneIndex: oldZoneIndex
         });
         return child;
-    }
+    }*/
+    var ret = ADM.executeTransaction(child, {
+                type: "add",
+                parent: parent,
+                child: child,
+            }, dryrun, parent.addChild, parent, child, dryrun);
+    if  (ret) 
+        return child;
 
     if (!dryrun) {
         console.warn("Warning: failed to add child: ", childRef, parent, child);
