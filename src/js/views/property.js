@@ -265,9 +265,26 @@
                         datalist.find('input[type="text"]')
                             .attr('id', valueId)
                             .addClass('title labelInput')
-                            .val(valueVal);
+                            .val(valueVal)
                         // save the datalist for update
+                            .appendTo(value);
                         this.options.imagesDatalist = $(this.options.imagesDatalist).add(datalist);
+                        //set default value
+                        value.find('#' + valueId).val(valueVal.value);
+                        $('<button> Upload </button>')
+                            .addClass('buttonStyle')
+                            .click({node:node, property:p}, function (e) {
+                                var saveDir = $.rib.pmUtils.getProjectDir() + "images/";
+                                $.rib.fsUtils.upload("image", $(this).parent(), function(file) {
+                                    // Write uploaded file to sandbox
+                                    $.rib.fsUtils.write(saveDir + file.name, file, function (newFile) {
+                                        ADM.setProperty(e.data.node, e.data.property, {
+                                            inSandbox: true,
+                                            value: "images/" + newFile.name
+                                        });
+                                    });
+                                });
+                            }).appendTo(value);
                         break;
 
                     case "record-array":
