@@ -1100,8 +1100,8 @@ var BWidgetRegistry = {
         displayLabel: "Text Input",
         paletteImageName: "jqm_text_input.svg",
         editable: {
-            selector: "",
-            propertyName: "value"
+            selector: "label",
+            propertyName: "label"
         },
         properties: {
             id: {
