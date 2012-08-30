@@ -44,6 +44,7 @@
                 e.stopPropagation();
             });
 
+            $.rib.bind("imagesUpdated", this._imagesUpdatedHandler, this);
             return this;
         },
 
@@ -106,6 +107,17 @@
             // happen when selection changes
         },
 
+        _imagesUpdatedHandler: function(event, widget) {
+            widget = widget || this;
+            var optionsList, options;
+            if (widget.options.imagesDatalist) {
+                options = event.usageStatus || $.rib.pmUtils.resourceRef;
+                optionsList = widget.options.imagesDatalist.find('ul');
+                updateOptions(optionsList, Object.keys(options));
+            }
+            return;
+        },
+
         _showProperties: function(node) {
             var labelId, labelVal, valueId, valueVal, count,
                 widget = this, type,  i, child, index, propType,
@@ -129,6 +141,8 @@
                     .addClass('title')
                     .text(BWidget.getDisplayLabel(type)+' Properties');
             content.empty();
+            // git rib of old datalist element
+            this.options.imagesDatalist = null;
             propertyItems = $('<div/>').addClass("propertyItems")
                                     .appendTo(content);
             props = node.getProperties();
@@ -211,6 +225,8 @@
                             .attr('id', valueId)
                             .addClass('title labelInput')
                             .val(valueVal);
+                        // save the datalist for update
+                        this.options.imagesDatalist = $(this.options.imagesDatalist).add(datalist);
                         break;
 
                     case "record-array":
