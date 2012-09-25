@@ -416,6 +416,7 @@ $.widget("ui.sortable", $.extend({}, $.ui.sortable.prototype, {
             var floating = this.containers[innermostIndex].floating;
             for (var j = this.items.length - 1; j >= 0; j--) {
                 if(!$.ui.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
+                if(this.items[j].item[0] == this.currentItem[0]) continue;
                 floating = floating || (/left|right/).test(this.items[j].item.css('float')) || (/inline|table-cell/).test(this.items[j].item.css('display'));
                 var posProperty = floating ? 'left' : 'top';
                 var sizeProperty = floating ? 'width' : 'height';
