@@ -529,7 +529,7 @@ $(function() {
                         this.options.connectWith = '.ui-sortable-connected';
                         this.refresh();
                     });
-                    $(this).data('sortable')._refreshItems();
+                    $(this).sortable('refresh');
 
 
 
