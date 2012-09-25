@@ -413,11 +413,13 @@ $.widget("ui.sortable", $.extend({}, $.ui.sortable.prototype, {
 
             //When entering a new container, we will find the item with the least distance and append our item near it
             var dist = 10000; var itemWithLeastDistance = null;
-            var posProperty = this.containers[innermostIndex].floating ? 'left' : 'top';
-            var sizeProperty = this.containers[innermostIndex].floating ? 'width' : 'height';
-            var base = this.positionAbs[posProperty] + this.offset.click[posProperty];
+            var floating = this.containers[innermostIndex].floating;
             for (var j = this.items.length - 1; j >= 0; j--) {
                 if(!$.ui.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
+                floating = floating || (/left|right/).test(this.items[j].item.css('float')) || (/inline|table-cell/).test(this.items[j].item.css('display'));
+                var posProperty = floating ? 'left' : 'top';
+                var sizeProperty = floating ? 'width' : 'height';
+                var base = this.positionAbs[posProperty] + this.offset.click[posProperty];
                 var cur = this.items[j][posProperty];
                 var nearBottom = false;
                 if(Math.abs(cur - base) > Math.abs(cur + this.items[j][sizeProperty] - base)) {
